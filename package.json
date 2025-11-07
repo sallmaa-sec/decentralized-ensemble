@@ -1,4 +1,5 @@
 {
+  "type": "module",
   "name": "decentralized-ensemble",
   "version": "1.0.0",
   "description": "",
@@ -11,5 +12,9 @@
   "license": "ISC",
   "devDependencies": {
     "truffle": "^5.11.5"
+  },
+  "dependencies": {
+    "ipfs": "^0.66.1",
+    "ipfs-http-client": "^60.0.1"
   }
 }
