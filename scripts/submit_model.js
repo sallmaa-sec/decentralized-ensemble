@@ -1,27 +1,17 @@
+// scripts/submit_model.js
+const EnsembleLearning = artifacts.require("EnsembleLearning");
+
 module.exports = async function (callback) {
   try {
-    const Ensemble = artifacts.require("EnsembleLearning");
-    const instance = await Ensemble.deployed();
+    const cid = process.argv[4]; // argument from Python
     const accounts = await web3.eth.getAccounts();
-    const round = (await instance.currentRoundId()).toNumber();
+    const instance = await EnsembleLearning.deployed();
+    const round = await instance.currentRoundId();
 
-    const cids = [
-      "bafyTrainer0",
-      "bafyTrainer1",
-      "bafyTrainer2",
-      "bafyTrainer3",
-      "bafyTrainer4"
-    ];
-
-    for (let i = 0; i < 5; i++) {
-      await instance.submitModel(round, cids[i], { from: accounts[i] });
-      console.log(`Trainer ${i} submitted model CID: ${cids[i]}`);
-    }
-
-    console.log("✅ All models submitted");
-    callback();
-  } catch (err) {
-    console.error(err);
-    callback(err);
+    await instance.submitModel(round, cid, { from: accounts[2] }); // trainer account
+    console.log(`✅ Model submitted by Trainer with CID: ${cid}`);
+  } catch (error) {
+    console.error("❌ Error submitting model:", error);
   }
+  callback();
 };

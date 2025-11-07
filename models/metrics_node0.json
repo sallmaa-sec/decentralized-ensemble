@@ -1,0 +1,8 @@
+{
+  "trainer_id": "0",
+  "timestamp": 1762531363,
+  "model": "RandomForestClassifier",
+  "train_samples": 60000,
+  "n_features": 32,
+  "train_accuracy": 1.0
+}

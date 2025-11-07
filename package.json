@@ -1,5 +1,5 @@
 {
-  "type": "module",
+  "type": "commonjs",
   "name": "decentralized-ensemble",
   "version": "1.0.0",
   "description": "",

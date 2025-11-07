@@ -1,35 +1,35 @@
+// scripts/submit_accuracy.js
+const EnsembleLearning = artifacts.require("EnsembleLearning");
+
 module.exports = async function (callback) {
   try {
-    const Ensemble = artifacts.require("EnsembleLearning");
-    const instance = await Ensemble.deployed();
     const accounts = await web3.eth.getAccounts();
-    const round = (await instance.currentRoundId()).toNumber();
+    const instance = await EnsembleLearning.deployed();
+    const round = await instance.currentRoundId();
 
-    const trainers = accounts.slice(0, 5);
-    const validators = accounts.slice(5, 10);
+    console.log(`📊 Submitting validator accuracy reports for round ${round.toString()}...`);
 
-    // Validators’ accuracy reports (permille = accuracy×10)
-    const template = [
-      [920, 915, 905, 540, 900],
-      [910, 905, 895, 560, 910],
-      [930, 920, 910, 580, 905],
-      [900, 895, 885, 520, 920],
-      [940, 930, 920, 590, 915],
-    ];
+    // Trainers (accounts[2] to accounts[6]) and one validator (accounts[7])
+    const trainerAddresses = [accounts[2], accounts[3], accounts[4], accounts[5], accounts[6]];
+    const validator = accounts[7];
 
-    for (let v = 0; v < validators.length; v++) {
-      for (let t = 0; t < trainers.length; t++) {
-        await instance.submitAccuracy(round, trainers[t], template[v][t], {
-          from: validators[v],
-        });
-      }
-      console.log(`Validator ${v} submitted accuracies`);
+    // Simulated accuracies (floats)
+    const accuracies = [0.95, 0.89, 0.92, 0.87, 0.98];
+
+    // Convert to integer (×1000 for precision)
+    const scaledAccuracies = accuracies.map(a => Math.round(a * 1000));
+
+    // Loop through trainers and submit each accuracy
+    for (let i = 0; i < trainerAddresses.length; i++) {
+      await instance.submitAccuracy(round, trainerAddresses[i], scaledAccuracies[i], { from: validator });
+      console.log(
+        `✅ Validator ${validator} submitted accuracy ${scaledAccuracies[i]} (scaled from ${accuracies[i]}) for trainer ${trainerAddresses[i]}`
+      );
     }
 
-    console.log("✅ All accuracies submitted");
-    callback();
-  } catch (err) {
-    console.error(err);
-    callback(err);
+    console.log("🎯 All accuracies successfully submitted!");
+  } catch (error) {
+    console.error("❌ Error submitting accuracies:", error);
   }
+  callback();
 };
